@@ -1,2 +1,3 @@
-const text = 'Hello, world!';
-console.log(text);
+const getGreeting = (name) => `Welcome${name}`;
+const greeting = getGreeting('Alex');
+console.log(greeting);

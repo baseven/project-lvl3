@@ -1,3 +1,5 @@
+const ESLintPlugin = require('eslint-webpack-plugin');
+
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
   module: {
@@ -8,11 +10,11 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
-          }
-        }
-      }
-    ]
-  },  
-  plugins: [],
+            presets: ['@babel/preset-env'],
+          },
+        },
+      },
+    ],
+  },
+  plugins: [new ESLintPlugin()],
 };

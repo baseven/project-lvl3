@@ -21,8 +21,13 @@
   "homepage": "https://github.com/baseven/project-lvl3#readme",
   "devDependencies": {
     "@babel/core": "^7.12.13",
+    "@babel/eslint-parser": "^7.12.13",
+    "@babel/eslint-plugin": "^7.12.13",
     "@babel/preset-env": "^7.12.13",
     "babel-loader": "^8.2.2",
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-webpack-plugin": "^2.5.0",
     "webpack": "^5.21.2",
     "webpack-cli": "^4.5.0"
   }
