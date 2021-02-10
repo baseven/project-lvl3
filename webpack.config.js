@@ -1,4 +1,6 @@
+const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -19,8 +21,12 @@ module.exports = {
   },
   plugins: [
     new ESLintPlugin(),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: 'template.html',
     }),
   ],
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+  },
 };
