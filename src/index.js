@@ -1,3 +1,3 @@
-const getGreeting = (name) => `Welcome, ${name}`;
-const greeting = getGreeting('Jon Snow');
-console.log(greeting);
+import init from './app';
+
+init();
