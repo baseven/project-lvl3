@@ -26,6 +26,9 @@ module.exports = {
       template: 'template.html',
     }),
   ],
+  devServer: {
+    open: true,
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
   },
