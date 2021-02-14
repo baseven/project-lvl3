@@ -4,6 +4,36 @@
     <title>RSS Reader</title>
   </head>
   <body>
-    <div id="point"></div>
+    <div id="point">
+      <main role="main" class="container">
+        <div class="jumbotron jumbotron-fluid">
+          <div class="container">
+            <h3 class="display-4">RSS Reader</h3>
+            <p>Follow the most interesting news with us</p>
+            <div class="input-group mb-3">
+              <input id="input" type="text" class="form-control" placeholder="Enter URL to add the RSS feed" aria-label="input for RSS link" aria-describedby="button-addon2">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Add</button>
+              </div>             
+            </div>
+            <div id="errorMessage" class="alert alert-danger invisible" role="alert"></div> 
+          </div>
+        </div>
+        <div id="feedsList"></div>
+      </main>
+      <div id="modalPost" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal post label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"></h5>
+              <button class="close" data-dismiss="modal">x</button>
+            </div>
+            <div class="modal-body">
+              <p></p>
+            </div>
+          </div>
+        </div>
+      </div>      
+    </div>
   </body>
 </html>
