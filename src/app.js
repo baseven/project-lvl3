@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import onChange from 'on-change';
-// import axios from 'axios';
+import axios from 'axios';
 import validate from './utils/validate';
 import renderError from './renderers/renderError';
+import parser from './utils/parser';
 
 const updateValidationState = (watchedState) => {
   const errors = validate(watchedState);
@@ -26,6 +27,8 @@ export default () => {
       valid: true,
       errors: {},
     },
+    links: [],
+    feeds: [],
     newsList: [],
   };
 
@@ -68,6 +71,32 @@ export default () => {
   input.addEventListener('input', ({ target: { value } }) => {
     watchedState.form.fields.url = value;
     updateValidationState(watchedState);
-    console.log(state);
+  });
+
+  // http://feeds.bbci.co.uk/sport/football/rss.xml?edition=uk
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    watchedState.form.processState = 'sending';
+    try {
+      const { url } = watchedState.form.fields;
+      // const = `https://hexlet-allorigins.herokuapp.com/get?url=${url}`;
+      const response = await axios.get(url);
+      watchedState.form.processState = 'finished';
+      watchedState.links.push(url);
+      const data = parser(response);
+      const { title, description, posts } = data;
+      watchedState.feeds.push({ title, description });
+      watchedState.newsList.push({ posts });
+      console.log(state);
+    } catch (err) {
+      // В реальных приложениях также требуется корректно обрабатывать сетевые ошибки
+      watchedState.form.processError = errorMessages.network.error;
+      watchedState.form.processState = 'failed';
+      console.log(state);
+      // здесь это опущено в целях упрощения приложения
+      throw err;
+    }
+    // Обработка данных, например, отправка на сервер
+    // watchedState.registrationForm.data
   });
 };
