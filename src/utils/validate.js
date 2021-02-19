@@ -2,8 +2,8 @@ import _ from 'lodash';
 import * as yup from 'yup';
 
 const errorMessages = {
-  validation: {
-    url: 'The URL has already been added',
+  url: {
+    message: 'The URL has already been added',
   },
 };
 
@@ -11,20 +11,11 @@ const schema = yup.object().shape({
   url: yup.string().required().url(),
 });
 
-const isUrlNew = (newsList, url) => {
-  if (_.size(newsList) === 0) {
-    return true;
-  }
-
-  const news = _.find(newsList, ({ link }) => _.eq(link, url));
-  return !!news;
-};
-
 const validate = (watchedState) => {
-  const { newsList } = watchedState;
+  const { links } = watchedState;
   const { url } = watchedState.form.fields;
-  if (!isUrlNew(newsList, url)) {
-    return errorMessages.validation;
+  if (_.includes(links, url)) {
+    return errorMessages;
   }
 
   try {
