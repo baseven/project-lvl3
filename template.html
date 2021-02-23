@@ -1,28 +1,59 @@
 <!doctype html>
-<html>
-  <head>
-    <title>RSS Reader</title>
-  </head>
-  <body class="d-flex flex-column min-vh-100">
-    <div id="point">
-      <main class="flex-grow-1">
-        <section class="container-fluid bg-secondary p-5">
-          <div class="row">
-            <div class="col-md-10 col-lg-8 mx-auto text-white">
-              <h1 class="display-3">RSS Reader</h1>
-              <p class="lead">Start reading RSS today! It is easy, it is nicely.</p>
-              <form id="rss-form">
-                <div class="input-group mb-3">
-                  <input autofocus required name="url" type="url" class="form-control" placeholder="RSS link" aria-label="url">
-                  <button type="submit" class="btn btn-primary" aria-label="add">Add</button>
-                </div>
-              </form>
-            </div>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+	<title>RSS Reader</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+  <div id="point">
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           </div>
-        </section>
-        <section class="container-fluid p-5"></section>
-      </main>
-      <footer class="footer border-top py-3 mt-5"></footer>
+          <div class="modal-body"></div>
+          <div class="modal-footer"><a class="btn btn-primary full-article" href="#" role="button" target="_blank" rel="noopener noreferrer">Читать полностью </a>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+      </div>
     </div>
-  </body>
+    <main class="flex-grow-1">
+      <section class="container-fluid bg-dark p-5">
+        <div class="row">
+          <div class="col-md-10 col-lg-8 mx-auto text-white">
+            <h1 class="display-3">RSS агрегатор</h1>
+            <p class="lead">Начните читать RSS сегодня! Это легко, это красиво.</p>
+            <form action="" class="rss-form">
+              <div class="input-group mb-3">
+                <input autofocus required name="url" aria-label="url" class="form-control form-control-lg" placeholder="ссылка RSS">
+                <button type="submit" aria-label="add" class="btn btn-lg btn-primary px-sm-5">Add</button>
+              </div>
+            </form>
+            <p class="text-muted my-1">Пример: https://ru.hexlet.io/lessons.rss</p>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </section>
+      <section class="container-fluid p-5">
+        <div class="row">
+          <div class="col-md-10 col-lg-8 mx-auto feeds"></div>
+        </div>
+        <div class="row">
+          <div class="col-md-10 col-lg-8 mx-auto posts"></div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer border-top py-3 mt-5">
+      <div class="container-xl">
+        <!--<div class="text-center">created by <a href="https://ru.hexlet.io/professions/frontend/projects/11" target="_blank">Hexlet</a></div>-->
+      </div>
+    </footer>
+  </div>
+</body>
 </html>
