@@ -1,5 +1,4 @@
-export default (feeds) => {
-  const feedsContainer = document.querySelector('.feeds');
+export default ({ feedsContainer }, { feeds }) => {
   const ul = document.createElement('ul');
   ul.classList.add('list-group', 'mb-5');
   const h2 = document.createElement('h2');
@@ -18,5 +17,6 @@ export default (feeds) => {
     ul.append(li);
   });
 
+  feedsContainer.innerHTML = '';
   feedsContainer.append(ul);
 };
