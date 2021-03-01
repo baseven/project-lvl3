@@ -7,7 +7,7 @@ const errorMessages = {
 
 const schema = yup.string().required().url();
 
-const validate = (watchedState) => {
+export default (watchedState) => {
   const { links } = watchedState;
   const { url } = watchedState.form;
   if (_.includes(links, url)) {
@@ -21,5 +21,3 @@ const validate = (watchedState) => {
     return e.message;
   }
 };
-
-export default validate;

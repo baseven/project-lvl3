@@ -1,16 +1,40 @@
 import _ from 'lodash';
-import onChange from 'on-change';
 import axios from 'axios';
-import validate from './utils/validate';
-import renderFeedback from './renderers/renderFeedback';
-import renderFeeds from './renderers/renderFeeds';
+import { validate, proxyUrl } from './utils/index';
+import parser from './parser';
+import watcher from './watcher';
 
-import parser from './utils/parser';
+const getInputValue = ({ target }, inputName) => {
+  const formData = new FormData(target);
+  const inputValue = formData.get(inputName);
+  return inputValue;
+};
 
 const updateValidationState = (watchedState) => {
   const error = validate(watchedState);
   watchedState.form.valid = _.isEqual(error, null);
   watchedState.form.error = error;
+};
+
+const buildFeed = (title, description) => ({
+  id: _.uniqueId(),
+  title,
+  description,
+});
+
+const buildPost = (feedId) => ({ title, description, link }) => ({
+  id: _.uniqueId(),
+  feedId,
+  title,
+  description,
+  link,
+});
+
+const updateRssContentState = (watchedState, { title, description, items }) => {
+  const feed = buildFeed(title, description);
+  watchedState.feeds.push(feed);
+  const posts = items.map(buildPost(feed.id));
+  watchedState.posts.unshift(...posts);
 };
 
 const errorMessages = {
@@ -19,7 +43,9 @@ const errorMessages = {
   },
 };
 
-export default () => {
+// http://feeds.bbci.co.uk/sport/football/rss.xml?edition=uk
+// http://lorem-rss.herokuapp.com/feed?unit=second&interval=1
+export default (element) => {
   const state = {
     form: {
       processState: 'filling',
@@ -32,51 +58,19 @@ export default () => {
     posts: [],
   };
 
-  const form = document.querySelector('.rss-form');
-  const submitButton = form.querySelector('[type="submit"]');
-
-  const processStateHandler = (processState, watchedState) => {
-    switch (processState) {
-      case 'filling': {
-        submitButton.disabled = false;
-        break;
-      }
-      case 'sending': {
-        submitButton.disabled = true;
-        break;
-      }
-      case 'failed': {
-        renderFeedback(form, watchedState.form.error);
-        break;
-      }
-      case 'finished': {
-        renderFeedback(form, watchedState.form.error);
-        renderFeeds(watchedState.feeds);
-        break;
-      }
-      default: {
-        break;
-      }
-    }
+  const elements = {
+    form: element.querySelector('.rss-form'),
+    submitButton: element.querySelector('[type="submit"]'),
+    feedbackContainer: element.querySelector('.feedback'),
+    feedsContainer: element.querySelector('.feeds'),
+    postsContainer: element.querySelector('.posts'),
   };
 
-  const watchedState = onChange(state, (path, value) => {
-    switch (path) {
-      case 'form.processState': {
-        processStateHandler(value, watchedState);
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  });
+  const watchedState = watcher(state, elements);
 
-  // http://feeds.bbci.co.uk/sport/football/rss.xml?edition=uk
-  form.addEventListener('submit', async (e) => {
+  elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const url = formData.get('url');
+    const url = getInputValue(e, 'url');
     watchedState.form.url = url;
     updateValidationState(watchedState);
     if (!watchedState.form.valid) {
@@ -87,22 +81,16 @@ export default () => {
 
     watchedState.form.processState = 'sending';
     try {
-      // const = `https://hexlet-allorigins.herokuapp.com/get?url=${url}`;
-      const response = await axios.get(url);
-      watchedState.links.push(url);
+      const response = await axios.get(proxyUrl(url));
       const data = parser(response);
-      const { title, description, posts } = data;
-      watchedState.feeds.push({ title, description });
-      watchedState.posts.push({ posts });
+      updateRssContentState(watchedState, data);
+      watchedState.links.push(url);
       watchedState.form.processState = 'finished';
     } catch (err) {
       watchedState.form.error = errorMessages.network.error;
       watchedState.form.processState = 'failed';
-      throw err;
     }
 
     watchedState.form.processState = 'filling';
-    form.reset();
-    form.elements.url.focus();
   });
 };
