@@ -1,7 +1,9 @@
+import i18n from 'i18next';
+
 export default ({ feedbackContainer }, { form: { error } }) => {
   if (error) {
     feedbackContainer.classList.add('text-danger');
-    feedbackContainer.textContent = error;
+    feedbackContainer.textContent = i18n.t(error);
     return;
   }
 
@@ -10,5 +12,5 @@ export default ({ feedbackContainer }, { form: { error } }) => {
   }
 
   feedbackContainer.classList.add('text-success');
-  feedbackContainer.textContent = 'RSS успешно загружен';
+  feedbackContainer.textContent = i18n.t('processMessages.finished');
 };

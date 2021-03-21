@@ -7,6 +7,7 @@ export default ({ form, submitButton }, { form: { processState } }) => {
   }
 
   submitButton.disabled = processState === 'sending';
+  input.disabled = processState === 'sending';
 
   const method = processState === 'failed' ? 'add' : 'remove';
   input.classList[method]('is-invalid');

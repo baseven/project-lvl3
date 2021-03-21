@@ -16,6 +16,7 @@ const processStateHandler = (processState, elements, watchedState) => {
       formRender(elements, watchedState);
       break;
     }
+    // заменить на filling
     case 'failed': {
       formRender(elements, watchedState);
       feedbackRender(elements, watchedState);

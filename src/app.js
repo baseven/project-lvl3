@@ -1,8 +1,10 @@
 import _ from 'lodash';
 import axios from 'axios';
-import { validate, proxyUrl } from './utils/index';
+import i18n from 'i18next';
+import { validate, proxyUrl } from './utils';
 import parser from './parser';
 import watcher from './watcher';
+import resources from './locales';
 
 const getInputValue = ({ target }, inputName) => {
   const formData = new FormData(target);
@@ -37,15 +39,13 @@ const updateRssContentState = (watchedState, { title, description, items }) => {
   watchedState.posts.unshift(...posts);
 };
 
-const errorMessages = {
-  network: {
-    error: 'Network Problems. Try again.',
-  },
-};
+export default async (element) => {
+  await i18n.init({
+    lng: 'en',
+    debug: true,
+    resources,
+  });
 
-// http://feeds.bbci.co.uk/sport/football/rss.xml?edition=uk
-// http://lorem-rss.herokuapp.com/feed?unit=second&interval=1
-export default (element) => {
   const state = {
     form: {
       processState: 'filling',
@@ -70,15 +70,17 @@ export default (element) => {
 
   elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    //     watchedState.form.processState = 'sending';
     const url = getInputValue(e, 'url');
     watchedState.form.url = url;
     updateValidationState(watchedState);
     if (!watchedState.form.valid) {
+      // убрать failed
       watchedState.form.processState = 'failed';
       watchedState.form.processState = 'filling';
       return;
     }
-
+    // убрать sending
     watchedState.form.processState = 'sending';
     try {
       const response = await axios.get(proxyUrl(url));
@@ -87,10 +89,13 @@ export default (element) => {
       watchedState.links.push(url);
       watchedState.form.processState = 'finished';
     } catch (err) {
-      watchedState.form.error = errorMessages.network.error;
+      watchedState.form.error = i18n.t('errorMessages.network');
+      // убрать failed
       watchedState.form.processState = 'failed';
     }
 
     watchedState.form.processState = 'filling';
   });
 };
+// http://feeds.bbci.co.uk/sport/football/rss.xml?edition=uk
+// http://lorem-rss.herokuapp.com/feed?unit=second&interval=1
