@@ -10,16 +10,11 @@ const processStateHandler = (processState, elements, watchedState) => {
   switch (processState) {
     case 'filling': {
       formRender(elements, watchedState);
+      feedbackRender(elements, watchedState);
       break;
     }
     case 'sending': {
       formRender(elements, watchedState);
-      break;
-    }
-    // заменить на filling
-    case 'failed': {
-      formRender(elements, watchedState);
-      feedbackRender(elements, watchedState);
       break;
     }
     case 'finished': {

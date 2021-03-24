@@ -6,12 +6,6 @@ import parser from './parser';
 import watcher from './watcher';
 import resources from './locales';
 
-const getInputValue = ({ target }, inputName) => {
-  const formData = new FormData(target);
-  const inputValue = formData.get(inputName);
-  return inputValue;
-};
-
 const updateValidationState = (watchedState) => {
   const error = validate(watchedState);
   watchedState.form.valid = _.isEqual(error, null);
@@ -70,18 +64,17 @@ export default async (element) => {
 
   elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    //     watchedState.form.processState = 'sending';
-    const url = getInputValue(e, 'url');
+    const formData = new FormData(e.target);
+    const url = formData.get('url');
+    watchedState.form.processState = 'sending';
+
     watchedState.form.url = url;
     updateValidationState(watchedState);
     if (!watchedState.form.valid) {
-      // убрать failed
-      watchedState.form.processState = 'failed';
       watchedState.form.processState = 'filling';
       return;
     }
-    // убрать sending
-    watchedState.form.processState = 'sending';
+
     try {
       const response = await axios.get(proxyUrl(url));
       const data = parser(response);
@@ -90,8 +83,6 @@ export default async (element) => {
       watchedState.form.processState = 'finished';
     } catch (err) {
       watchedState.form.error = i18n.t('errorMessages.network');
-      // убрать failed
-      watchedState.form.processState = 'failed';
     }
 
     watchedState.form.processState = 'filling';

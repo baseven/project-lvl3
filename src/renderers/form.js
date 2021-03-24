@@ -1,4 +1,4 @@
-export default ({ form, submitButton }, { form: { processState } }) => {
+export default ({ form, submitButton }, { form: { processState, error } }) => {
   const input = form.elements.url;
   if (processState === 'finished') {
     form.reset();
@@ -9,6 +9,6 @@ export default ({ form, submitButton }, { form: { processState } }) => {
   submitButton.disabled = processState === 'sending';
   input.disabled = processState === 'sending';
 
-  const method = processState === 'failed' ? 'add' : 'remove';
+  const method = error ? 'add' : 'remove';
   input.classList[method]('is-invalid');
 };
