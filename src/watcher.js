@@ -37,6 +37,10 @@ export default (state, elements) => {
         processStateHandler(value, elements, watchedState);
         break;
       }
+      case 'posts': {
+        postsRender(elements, watchedState);
+        break;
+      }
       default: {
         break;
       }

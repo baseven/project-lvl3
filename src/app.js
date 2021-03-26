@@ -12,10 +12,11 @@ const updateValidationState = (watchedState) => {
   watchedState.form.error = error;
 };
 
-const buildFeed = (title, description) => ({
+const buildFeed = (title, description, url) => ({
   id: _.uniqueId(),
   title,
   description,
+  url,
 });
 
 const buildPost = (feedId) => ({ title, description, link }) => ({
@@ -26,8 +27,32 @@ const buildPost = (feedId) => ({ title, description, link }) => ({
   link,
 });
 
-const updateRssContentState = (watchedState, { title, description, items }) => {
-  const feed = buildFeed(title, description);
+const updatePosts = (watchedState, { items }, url) => {
+  const { feeds, posts } = watchedState;
+  const currentFeed = feeds.find((feed) => feed.url === url);
+  const newItems = items.filter((item) => !posts.find((post) => post.link === item.link));
+  const newPosts = newItems.map(buildPost(currentFeed.id));
+  watchedState.posts.unshift(...newPosts);
+};
+
+const updateRssContent = (watchedState) => {
+  const { links } = watchedState;
+  if (_.size(links) !== 0) {
+    links.forEach(async (url) => {
+      const response = await axios.get(proxyUrl(url));
+      const data = parser(response);
+      updatePosts(watchedState, data, url);
+    });
+  }
+
+  const timeout = 5000;
+  setTimeout(() => {
+    updateRssContent(watchedState);
+  }, timeout);
+};
+
+const addRssContent = (watchedState, { title, description, items }, url) => {
+  const feed = buildFeed(title, description, url);
   watchedState.feeds.push(feed);
   const posts = items.map(buildPost(feed.id));
   watchedState.posts.unshift(...posts);
@@ -61,14 +86,14 @@ export default async (element) => {
   };
 
   const watchedState = watcher(state, elements);
+  updateRssContent(watchedState);
 
   elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const url = formData.get('url');
-    watchedState.form.processState = 'sending';
-
     watchedState.form.url = url;
+    watchedState.form.processState = 'sending';
     updateValidationState(watchedState);
     if (!watchedState.form.valid) {
       watchedState.form.processState = 'filling';
@@ -78,7 +103,7 @@ export default async (element) => {
     try {
       const response = await axios.get(proxyUrl(url));
       const data = parser(response);
-      updateRssContentState(watchedState, data);
+      addRssContent(watchedState, data, url);
       watchedState.links.push(url);
       watchedState.form.processState = 'finished';
     } catch (err) {
